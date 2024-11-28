@@ -1,4 +1,5 @@
 #!/bin/bash
+#create.sh
 echo "DEBUG create script running"
 # check if no arguments are provided
 if [ $# -eq  0 ]; then
@@ -10,7 +11,8 @@ id=$1  # store the first argument (user ID) in 'id'
 
 # check if a directory with the user ID already exists
 if [ -d "$id" ]; then 
-    ./client.sh "nok: user already exists"
+	#echo "DEBUG nok: user already exists"
+    #./client.sh "nok: user already exists"
     exit 1  # exit the script with an error code
 fi
 
@@ -21,5 +23,7 @@ mkdir "$id"
 touch "$id/wall.txt"
 touch "$id/friends.txt"
 
-./client.sh "ok: user created!" #send success message to client
+exit 0 #success
+#echo "DEBUG ok: user created!"
+#./client.sh "ok: user created!" #send success message to client
 
