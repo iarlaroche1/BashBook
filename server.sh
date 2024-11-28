@@ -1,18 +1,25 @@
 #!/bin/bash
-
+# called in client with ./server.sh "$req" "$id" "$args"
 # keep running the loop forever to keep processing requests
 while true; do
     # ask the user for a request
-    echo "Enter request:"
-    read request
+    #echo "Enter request:"
+    #read request
 
     # split the input into separate arguments (e.g., command and its params)
-    set -- $request  # this turns the request string into $1, $2, etc.
+    #set -- $request  # this turns the request string into $1, $2, etc.
 
     # store the first argument as the command
-    cmd=$1           
-    shift            # move everything down, so now $1 is the first argument (after the command)
-
+    cmd=$1
+    id=$2 
+    args=$3
+    
+    echo "SERVER: cmd is $cmd "
+    echo "SERVER: id is $id "
+    echo "SERVER: args is $args "
+            
+    #shift            # move everything down, so now $1 is the first argument (after the command)
+	
     case "$cmd" in
         # if the user types 'help', show available commands
         help)
@@ -22,18 +29,23 @@ while true; do
             echo "post \$sender \$receiver \$message - posts a message on the receiver's wall."
             echo "display \$id          - displays the wall of the user with the given user id."
             echo "help                  - shows this help message."
+         	
+           # continue
+           exit 1
             ;;
+            
         
         # if the command is 'create', we create a user using the create.sh script
         create)
             id=$1
+           echo "DEBUG create called in server "
             # check if a user id was provided
-            if [ -z "$id" ]; then
+            if [ -z "$args" ]; then #changed from $id to $args
                 echo "Error: No user id provided."  # if no ID, show error
                 continue  # go back to the start and ask for another request
             fi
             # call the create.sh script to create the user
-            ./create.sh "$id"  
+            ./create.sh "$args"  
             ;;
         
         # if the command is 'add', add a friend to the user's friend list
@@ -79,7 +91,7 @@ while true; do
         
         # if the command doesn't match any of the above, show bad request
         *)
-            echo "nok: bad request"  # error message for anything else
+            echo "SERVER nok: bad request"  # error message for anything else
             ;;
     esac
 done
