@@ -1,15 +1,9 @@
 #!/bin/bash
+#server.sh
 # called in client with ./server.sh "$req" "$id" "$args"
 # keep running the loop forever to keep processing requests
 while true; do
-    # ask the user for a request
-    #echo "Enter request:"
-    #read request
 
-    # split the input into separate arguments (e.g., command and its params)
-    #set -- $request  # this turns the request string into $1, $2, etc.
-
-    # store the first argument as the command
     cmd=$1
     id=$2 
     args=$3
@@ -31,22 +25,35 @@ while true; do
             echo "help                  - shows this help message."
          	
            # continue
-           exit 1
+           exit 0
             ;;
             
         
         # if the command is 'create', we create a user using the create.sh script
         create)
-            id=$1
+            #id=$1
            echo "DEBUG create called in server "
-            # check if a user id was provided
+            # check if a user name was provided
             if [ -z "$args" ]; then #changed from $id to $args
                 echo "Error: No user id provided."  # if no ID, show error
                 continue  # go back to the start and ask for another request
             fi
             # call the create.sh script to create the user
-            ./create.sh "$args"  
-            ;;
+             # Call the create.sh script to create the user
+        ./create.sh "$args"
+        
+        # Capture the exit status of create.sh
+        status=$?
+
+        # Based on the exit status, send an appropriate message back to client.sh
+        if [ "$status" -eq 0 ]; then
+            echo "ok: user created!"  # Success message
+            exit 0
+        else
+            echo "nok: user already exists"  # Failure message
+            exit 1
+        fi
+        ;;
         
         # if the command is 'add', add a friend to the user's friend list
         add)
