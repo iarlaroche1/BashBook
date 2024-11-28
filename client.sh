@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#client.sh
 # should the client authenticate the format and request type ? For now, I think that as long as the server script handles the processing of the arguments provided by client, it will be the smoothest 
 id="$1"
 
@@ -27,16 +27,11 @@ while true; do
 	args="$*" # the rest of the text are the arguments (e.g in the case of a message being posted, 				consisting of multiple words". this wont include the rquest itself as it has been shifted
 	
 	# call server with arguments
-	   valid=$(./server.sh "$req" "$id" "$args")
+	   ./server.sh "$req" "$id" "$args"
+	   
+	   
+
 	
-	
-	echo " ERROR CHECK IN CLIENT valid = $valid" #debug
-	# check what message the scrripts return
-	#for create
-	if [ "$valid" == "ok: user created!" ]; then
-        echo "SUCCESS: user created!"
-        
-    elif [ "$valid" == "nok: user already exists" ]; then
-        echo "ERROR: user already exists"
-        fi
+
+    
 done
