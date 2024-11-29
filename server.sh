@@ -35,25 +35,25 @@ while true; do
            echo "DEBUG create called in server "
             # check if a user name was provided
             if [ -z "$args" ]; then #changed from $id to $args
-                echo "Error: No user id provided."  # if no ID, show error
-                continue  # go back to the start and ask for another request
+                echo "nok: No user id provided."  # if no ID, show error
+                echo "nok: bad request"
+                exit 1  # return a failure message to client
             fi
-            # call the create.sh script to create the user
-             # Call the create.sh script to create the user
-        ./create.sh "$args"
+            # Call the create.sh script to create the user
+            ./create.sh "$args"
         
-        # Capture the exit status of create.sh
-        status=$?
+            # Capture the exit status of create.sh
+            status=$?
 
-        # Based on the exit status, send an appropriate message back to client.sh
-        if [ "$status" -eq 0 ]; then
-            echo "ok: user created!"  # Success message
-            exit 0
-        else
-            echo "nok: user already exists"  # Failure message
-            exit 1
-        fi
-        ;;
+            # Based on the exit status, send an appropriate message back to client.sh
+            if [ "$status" -eq 0 ]; then
+                echo "ok: user created!"  # Success message
+                exit 0
+            else
+                echo "nok: user already exists"  # Failure message
+                exit 1
+            fi
+            ;;
         
         # if the command is 'add', add a friend to the user's friend list
         add)
