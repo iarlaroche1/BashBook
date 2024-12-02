@@ -39,7 +39,7 @@ else
 		fi
 		
 		# display a barebones help message for the user to know what commands are valid.
-		echo "Enter request: [help | create | add | post | display]"
+		echo "Enter request: [help | create | add | post | display | quit]"
 
 		# Gets the stdin from the user and sets the arguments [$1, $2, etc] to those gathered
 		# from the stdin.
@@ -54,7 +54,13 @@ else
 
 		# The actual request is obtained from the first arguement.
 		cmd=$1
-		case "$cmd" in 
+		case "$cmd" in
+			# Allows the user to quit, and performs the necessary closing actions.
+		        quit)
+				rm "$id".pipe
+				./release.sh server.lock
+				exit 0
+				;;	
 			# if the user types 'help', show available commands
 			help)
 				echo
@@ -64,7 +70,7 @@ else
 				echo "post \$receiver \$message - posts a message on the receiver's wall."
 				echo "display          	- displays the wall of the logged in user."
 				echo "help                  	- shows this help message."
-
+				echo "quit			- quits the program."
 				echo
 				;;
 			create)

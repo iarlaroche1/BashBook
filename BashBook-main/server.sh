@@ -4,7 +4,7 @@
 while true; do
    
 
-
+    # This traps (Ctrl-c) to terminate the script and remove the pipe.
     trap "rm server.pipe & exit 1" SIGINT
     # This creates the server side pipe for communication with the clients, if it doesn't exist already.
     if [[ ! -p server.pipe ]]; then
