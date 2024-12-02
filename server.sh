@@ -1,34 +1,31 @@
 #!/bin/bash
 
-    # The user's id is obtained from the first parameter and shall be used to identify the correct pipe.
-    id=$1	
+# Keep looping to process commands from the clients.
+while true; do
+   
 
+
+    trap "rm server.pipe & exit 1" SIGINT
     # This creates the server side pipe for communication with the clients, if it doesn't exist already.
     if [[ ! -p server.pipe ]]; then
 	    mkfifo server.pipe
     fi
     
     # The request is obtained from server.pipe as it acts as a place for users to store their requests.
-    read request < $server.pipe
+    read request < server.pipe
 
     # split the input into separate arguments (e.g., command and its params)
     set -- $request  # this turns the request string into $1, $2, etc.
 
+   # The user's id is obtained from the first parameter and shall be used to identify the correct pipe.
+    id=$1	
+    shift
 
     # store the first argument as the command
     cmd=$1
     shift            # move everything down, so now $1 is the first argument (after the command)
     case "$cmd" in
         # if the user types 'help', show available commands
-        help)
-            echo "Available commands:"
-            echo "create           	- creates a user with the id currently in use."
-            echo "add \$friend  		- adds a friend to the user currently online."
-            echo "post \$receiver \$message - posts a message on the receiver's wall."
-            echo "display          	- displays the wall of the logged in user."
-            echo "help                  	- shows this help message." 
-	    ;;
-        
         # if the command is 'create', we create a user using the create.sh script
         create)
             id=$1
@@ -37,7 +34,7 @@
                 echo "Error: No user id provided." > "$id".pipe  # if no ID, forward error to user pipe
 	    else
             # call the create.sh script to create the user and forwards the output to the user's pipe
-            ./create.sh "$id" > "$id".pipe
+	    echo $(./create.sh $id) > "$id".pipe
 	    fi
 	    ;;
         
@@ -50,7 +47,7 @@
                 echo "nok: bad request" > "$id".pipe  # if anything is missing, forward an error to the user's pipe
 	    else
             # call the add_friend.sh script to add the friend. Output is forwarded to the user pipe.
-            ./add_friend.sh "$id" "$friend" > "$id".pipe
+	    echo $(./add_friend.sh "$id" "$friend") > "$id".pipe
 	    fi
 	    ;;
         
@@ -66,7 +63,7 @@
                 echo "nok: bad request" > "$id".pipe  # if any part is missing, show error to user pipe
             else
             # call the post_message.sh script to post the message
-            ./post_message.sh "$sender" "$receiver" "$message" > "$id".pipe
+	    echo $(./post_message.sh "$sender" "$receiver" "$message") > "$id".pipe
 	    fi
 	    ;;
         
@@ -78,7 +75,7 @@
                 echo "nok: bad request"  # show error if no user ID
 	    else
 	    # call display_wall.sh to show the wall of the user which will be forwarded to the user's pipe (to be handled in the client side).
-            ./display_wall.sh "$id" > "$id".pipe
+	    echo $(./display_wall.sh "$id") > "$id".pipe
 	    fi
 	    ;;
         
@@ -87,4 +84,4 @@
             echo "nok: bad request" # error message for anything else
             ;;
     esac
- 
+done 
